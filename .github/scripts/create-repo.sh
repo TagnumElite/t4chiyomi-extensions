@@ -12,7 +12,7 @@ cd repo
 
 APKS=( ../apk/*".apk" )
 
-for APK in ${APKS[@]}; do
+for APK in "${APKS[@]}"; do
     FILENAME=$(basename ${APK})
     BADGING="$(${TOOLS}/aapt dump --include-meta-data badging $APK)"
 
