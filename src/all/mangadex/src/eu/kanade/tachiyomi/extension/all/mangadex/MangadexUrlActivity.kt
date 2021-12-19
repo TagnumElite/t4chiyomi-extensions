@@ -25,7 +25,13 @@ class MangadexUrlActivity : Activity() {
             val titleid = pathSegments[1]
             val mainIntent = Intent().apply {
                 action = "eu.kanade.tachiyomi.SEARCH"
-                putExtra("query", "${MangaDex.PREFIX_ID_SEARCH}$titleid")
+                with(pathSegments[0]) {
+                    when {
+                        equals("chapter") -> putExtra("query", "${MDConstants.prefixChSearch}$titleid")
+                        equals("group") -> putExtra("query", "${MDConstants.prefixGrpSearch}$titleid")
+                        else -> putExtra("query", "${MDConstants.prefixIdSearch}$titleid")
+                    }
+                }
                 putExtra("filter", packageName)
             }
 
