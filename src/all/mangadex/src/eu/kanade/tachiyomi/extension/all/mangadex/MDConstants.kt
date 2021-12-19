@@ -1,7 +1,8 @@
 package eu.kanade.tachiyomi.extension.all.mangadex
 
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
+import java.util.TimeZone
 
 object MDConstants {
     val uuidRegex =

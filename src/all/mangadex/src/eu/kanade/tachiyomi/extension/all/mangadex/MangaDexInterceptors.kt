@@ -7,7 +7,12 @@ import eu.kanade.tachiyomi.network.POST
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import okhttp3.*
+import okhttp3.Headers
+import okhttp3.Interceptor
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.RequestBody
+import okhttp3.Response
 import okhttp3.internal.Util
 import uy.kohesive.injekt.injectLazy
 

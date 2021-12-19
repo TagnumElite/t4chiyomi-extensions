@@ -51,6 +51,7 @@ class MangaDexFactory : SourceFactory {
         MangaDexOther()
     )
 }
+
 class MangaDexEnglish : MangaDex("en", "gb")
 class MangaDexJapanese : MangaDex("ja", "jp")
 class MangaDexPolish : MangaDex("pl", "pl")

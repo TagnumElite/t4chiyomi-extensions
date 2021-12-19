@@ -2,24 +2,36 @@ package eu.kanade.tachiyomi.extension.all.mangadex
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.support.v7.preference.CheckBoxPreference
 import android.support.v7.preference.ListPreference
 import android.support.v7.preference.PreferenceScreen
-import android.support.v7.preference.CheckBoxPreference
 import android.util.Log
-import eu.kanade.tachiyomi.extension.all.mangadex.dto.*
+import eu.kanade.tachiyomi.extension.all.mangadex.dto.AggregateDto
+import eu.kanade.tachiyomi.extension.all.mangadex.dto.ChapterDto
+import eu.kanade.tachiyomi.extension.all.mangadex.dto.ChapterListDto
+import eu.kanade.tachiyomi.extension.all.mangadex.dto.MangaDto
+import eu.kanade.tachiyomi.extension.all.mangadex.dto.MangaListDto
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.asObservableSuccess
 import eu.kanade.tachiyomi.source.ConfigurableSource
-import eu.kanade.tachiyomi.source.model.*
+import eu.kanade.tachiyomi.source.model.FilterList
+import eu.kanade.tachiyomi.source.model.MangasPage
+import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.HttpSource
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
-import okhttp3.*
+import okhttp3.CacheControl
+import okhttp3.Headers
+import okhttp3.HttpUrl
+import okhttp3.Request
+import okhttp3.Response
 import org.jsoup.SerializationException
 import rx.Observable
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
-import java.util.*
+import java.util.Date
 
 abstract class MangaDex(
     override val lang: String,
@@ -27,7 +39,7 @@ abstract class MangaDex(
 ) : ConfigurableSource, HttpSource() {
     override val name = "MangaDex"
     override val baseUrl = "https://mangadex.org"
-    override val supportsLatest = true;
+    override val supportsLatest = true
 
     private val helper = MangaDexHelper()
 
@@ -99,12 +111,12 @@ abstract class MangaDex(
             setDefaultValue(true)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getSafeRatingPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getSafeRatingPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
             }
-
         }
 
         val suggestiveRatingPref = androidx.preference.CheckBoxPreference(screen.context).apply {
@@ -114,12 +126,12 @@ abstract class MangaDex(
             setDefaultValue(true)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getSuggestiveRatingPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getSuggestiveRatingPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
             }
-
         }
 
         val eroticaRatingPref = androidx.preference.CheckBoxPreference(screen.context).apply {
@@ -129,12 +141,12 @@ abstract class MangaDex(
             setDefaultValue(false)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getEroticaRatingPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getEroticaRatingPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
             }
-
         }
 
         val pornographicRatingPref = androidx.preference.CheckBoxPreference(screen.context).apply {
@@ -144,12 +156,12 @@ abstract class MangaDex(
             setDefaultValue(false)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getPornographicRatingPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getPornographicRatingPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
             }
-
         }
 
         val japaneseContentPref = androidx.preference.CheckBoxPreference(screen.context).apply {
@@ -159,7 +171,8 @@ abstract class MangaDex(
             setDefaultValue(true)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getJapaneseContentPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getJapaneseContentPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
@@ -173,7 +186,8 @@ abstract class MangaDex(
             setDefaultValue(true)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getChineseContentPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getChineseContentPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
@@ -187,7 +201,8 @@ abstract class MangaDex(
             setDefaultValue(true)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getKoreanContentPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getKoreanContentPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
@@ -251,7 +266,6 @@ abstract class MangaDex(
             }
         }
 
-
         val safeRatingPref = CheckBoxPreference(screen.context).apply {
             key = MDConstants.getSafeRatingPref(internalLang)
             title = "Enable Safe content"
@@ -259,12 +273,12 @@ abstract class MangaDex(
             setDefaultValue(true)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getSafeRatingPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getSafeRatingPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
             }
-
         }
 
         val suggestiveRatingPref = CheckBoxPreference(screen.context).apply {
@@ -274,12 +288,12 @@ abstract class MangaDex(
             setDefaultValue(true)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getSuggestiveRatingPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getSuggestiveRatingPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
             }
-
         }
 
         val eroticaRatingPref = CheckBoxPreference(screen.context).apply {
@@ -289,12 +303,12 @@ abstract class MangaDex(
             setDefaultValue(false)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getEroticaRatingPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getEroticaRatingPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
             }
-
         }
 
         val pornographicRatingPref = CheckBoxPreference(screen.context).apply {
@@ -304,12 +318,12 @@ abstract class MangaDex(
             setDefaultValue(false)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getPornographicRatingPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getPornographicRatingPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
             }
-
         }
 
         val japaneseContentPref = CheckBoxPreference(screen.context).apply {
@@ -319,7 +333,8 @@ abstract class MangaDex(
             setDefaultValue(true)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getJapaneseContentPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getJapaneseContentPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
@@ -333,7 +348,8 @@ abstract class MangaDex(
             setDefaultValue(true)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getChineseContentPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getChineseContentPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
@@ -347,13 +363,13 @@ abstract class MangaDex(
             setDefaultValue(true)
             setOnPreferenceChangeListener { _, newValue ->
                 preferences.edit()
-                    .putBoolean(MDConstants.getKoreanContentPref(internalLang),
+                    .putBoolean(
+                        MDConstants.getKoreanContentPref(internalLang),
                         newValue as Boolean
                     )
                     .commit()
             }
         }
-
 
         screen.addPreference(coverQualityPref)
         screen.addPreference(dataSaverPref)
@@ -395,7 +411,7 @@ abstract class MangaDex(
             val chineseContentPref = preferences.getBoolean(MDConstants.getChineseContentPref(internalLang), true)
             if (chineseContentPref)
                 addQueryParameter("originalLanguage[]", MDConstants.originalLanguagePrefValChinese)
-                addQueryParameter("originalLanguage[]", MDConstants.originalLanguagePrefValChineseHk)
+            addQueryParameter("originalLanguage[]", MDConstants.originalLanguagePrefValChineseHk)
 
             val koreanContentPref = preferences.getBoolean(MDConstants.getKoreanContentPref(internalLang), false)
             if (koreanContentPref) addQueryParameter("originalLanguage[]", MDConstants.originalLanguagePrefValKorean)
@@ -476,6 +492,7 @@ abstract class MangaDex(
 
         return MangasPage(mangaList, hasMoreResults)
     }
+
     override fun latestUpdatesRequest(page: Int): Request {
         val url = HttpUrl.parse(MDConstants.apiChapterUrl)!!.newBuilder().apply {
             addQueryParameter("offset", helper.getLatestChapterOffset(page))
@@ -565,8 +582,7 @@ abstract class MangaDex(
             tempUrl?.apply {
                 addQueryParameter("group", groupID)
             }
-        }
-        else {
+        } else {
             tempUrl?.apply {
                 val actualQuery = query.replace(MDConstants.whitespaceRegex, " ")
                 if (actualQuery.isNotBlank()) {
@@ -662,6 +678,7 @@ abstract class MangaDex(
         }.build().toString()
         return GET(url, headers = headers, cache = CacheControl.FORCE_NETWORK)
     }
+
     override fun chapterListParse(response: Response): List<SChapter> {
         if (response.isSuccessful.not()) {
             throw Exception("HTTP ${response.code()}")
@@ -705,6 +722,7 @@ abstract class MangaDex(
             throw(e)
         }
     }
+
     override fun pageListRequest(chapter: SChapter): Request {
         if (!helper.containsUuid(chapter.url)) {
             throw Exception("Migrate this manga from MangaDex to MangaDex to update it")
@@ -761,4 +779,3 @@ abstract class MangaDex(
     override fun getFilterList(): FilterList =
         helper.mdFilters.getMDFilterList(preferences, internalLang)
 }
-

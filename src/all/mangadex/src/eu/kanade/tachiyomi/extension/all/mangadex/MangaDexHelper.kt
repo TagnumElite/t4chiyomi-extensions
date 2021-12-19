@@ -2,7 +2,11 @@ package eu.kanade.tachiyomi.extension.all.mangadex
 
 import android.os.Build
 import android.util.Log
-import eu.kanade.tachiyomi.extension.all.mangadex.dto.*
+import eu.kanade.tachiyomi.extension.all.mangadex.dto.AtHomeDto
+import eu.kanade.tachiyomi.extension.all.mangadex.dto.ChapterDataDto
+import eu.kanade.tachiyomi.extension.all.mangadex.dto.MangaAttributesDto
+import eu.kanade.tachiyomi.extension.all.mangadex.dto.MangaDataDto
+import eu.kanade.tachiyomi.extension.all.mangadex.dto.asMdMap
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SChapter
@@ -15,7 +19,8 @@ import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.parser.Parser
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class MangaDexHelper() {
