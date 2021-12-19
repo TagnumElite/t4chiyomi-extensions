@@ -243,15 +243,6 @@
     "nsfw": 1
   },
   {
-    "name": "Tachiyomi: My Manga Reader CMS (Many sources)",
-    "pkg": "eu.kanade.tachiyomi.extension.all.mmrcms",
-    "apk": "tachiyomi-all.mmrcms-v1.2.55.apk",
-    "lang": "all",
-    "code": 55,
-    "version": "1.2.55",
-    "nsfw": 1
-  },
-  {
     "name": "Tachiyomi: MyReadingManga",
     "pkg": "eu.kanade.tachiyomi.extension.all.myreadingmanga",
     "apk": "tachiyomi-all.myreadingmanga-v1.2.41.apk",
@@ -825,15 +816,6 @@
     "lang": "en",
     "code": 1,
     "version": "1.2.1",
-    "nsfw": 0
-  },
-  {
-    "name": "Tachiyomi: CatManga",
-    "pkg": "eu.kanade.tachiyomi.extension.en.catmanga",
-    "apk": "tachiyomi-en.catmanga-v1.2.2.apk",
-    "lang": "en",
-    "code": 2,
-    "version": "1.2.2",
     "nsfw": 0
   },
   {
