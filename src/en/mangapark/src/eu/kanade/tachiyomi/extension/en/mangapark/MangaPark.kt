@@ -126,7 +126,6 @@ class MangaPark : ConfigurableSource, ParsedHttpSource() {
                 }
             }
         }
-
     }
 
     // force network to make sure chapter prefs take effect
